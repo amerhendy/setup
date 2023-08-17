@@ -1,0 +1,71 @@
+<?php
+namespace {{ namespace }};
+use {{ namespacedModel }} as {{ model }};
+use Illuminate\Support\Facades\DB;
+use \Amerhendy\Amer\App\Http\Controllers\Base\AmerController;
+use \Amerhendy\Amer\App\Helpers\Library\AmerPanel\AmerPanelFacade as AMER;
+use {{ InsertnamespacedRequests }} as DummyClassRequest;
+
+class {{ class }} extends AmerController
+{
+    use \Amerhendy\Amer\App\Http\Controllers\Base\Operations\ListOperation;
+    use \Amerhendy\Amer\App\Http\Controllers\Base\Operations\CreateOperation  {store as traitStore;}
+    use \Amerhendy\Amer\App\Http\Controllers\Base\Operations\UpdateOperation;
+    use \Amerhendy\Amer\App\Http\Controllers\Base\Operations\DeleteOperation;
+    use \Amerhendy\Amer\App\Http\Controllers\Base\Operations\ShowOperation;
+    use \Amerhendy\Amer\App\Http\Controllers\Base\Operations\TrashOperation;
+    use \Amerhendy\Amer\App\Http\Controllers\Base\Operations\CloneOperation;
+    use \Amerhendy\Amer\App\Http\Controllers\Base\Operations\BulkCloneOperation;
+    use \Amerhendy\Amer\App\Http\Controllers\Base\Operations\BulkDeleteOperation;
+    public function setup()
+    {
+        AMER::setModel({{ model }}::class);
+        AMER::setRoute(config('amer.route_prefix') . '/{{ model }}');
+        AMER::setEntityNameStrings(trans('AMER::{{ model }}.singular'), trans('AMER::{{ model }}.plural'));
+        $this->Amer->setTitle(trans('AMER::{{ model }}.create'), 'create');
+        $this->Amer->setHeading(trans('AMER::{{ model }}.create'), 'create');
+        $this->Amer->setSubheading(trans('AMER::{{ model }}.create'), 'create');
+        $this->Amer->setTitle(trans('AMER::{{ model }}.edit'), 'edit');
+        $this->Amer->setHeading(trans('AMER::{{ model }}.edit'), 'edit');
+        $this->Amer->setSubheading(trans('AMER::{{ model }}.edit'), 'edit');
+        $this->Amer->addClause('where', 'deleted_at', '=', null);
+        $this->Amer->enableDetailsRow ();
+        $this->Amer->allowAccess ('details_row');
+        if(amer_user()->can('{{ model }}-add') == 0){$this->Amer->denyAccess('create');}
+        if(amer_user()->can('{{ model }}-trash') == 0){$this->Amer->denyAccess ('trash');}
+        if(amer_user()->can('{{ model }}-update') == 0){$this->Amer->denyAccess('update');}
+        if(amer_user()->can('{{ model }}-delete') == 0){$this->Amer->denyAccess('delete');}
+        if(amer_user()->can('{{ model }}-show') == 0){$this->Amer->denyAccess('show');}
+    }
+
+    protected function setupListOperation(){
+        AMER::setFromDb();
+    }
+    protected function setupCreateOperation()
+    {
+        AMER::setValidation(DummyClassRequest::class);
+        AMER::setFromDb();
+    }
+    protected function setupUpdateOperation()
+    {
+        AMER::setValidation(DummyClassRequest::class);
+        AMER::setFromDb();
+    }
+    public function store(DummyClassRequest $request)
+    {
+        $table=$this->Amer->model->getTable();
+        $lsid=DB::table($table)->get()->max('id');
+        $id=$lsid+1;
+        $this->Amer->addField(['type' => 'hidden', 'name' => 'id', 'value'=>$id]);
+        $this->Amer->getRequest()->request->add(['id'=> $id]);
+        $this->Amer->setRequest($this->Amer->validateRequest());
+        $this->Amer->unsetValidation();
+        return $this->traitStore();
+    }
+    public function destroy($id)
+    {
+        $this->Amer->hasAccessOrFail('delete');
+        $data=$this->Amer->model::remove_force($id);
+        return $data;
+    }
+}

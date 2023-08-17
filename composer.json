@@ -1,0 +1,36 @@
+{
+    "name": "amerhendy/setup",
+    "type": "library",
+    "license": "mit",
+    "version": "0.0.0",
+    "autoload": {
+        "psr-4": {
+            "Amerhendy\\Setup\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "amerhendy",
+            "email": "amer.hendy@yahoo.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {
+        "php": "^8.1",
+		"amerhendy/employment":"*"
+    },
+	"prefer-stable": true,
+	"config": 
+	{
+		"sort-packages": true,
+		"preferred-install": "dist",
+		"optimize-autoloader": true
+	},
+	"extra": 
+	{
+		"laravel": 
+			{
+			"providers": ["Amerhendy\\Setup\\AmerSetup"]
+		}
+	}
+}

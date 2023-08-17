@@ -1,0 +1,14 @@
+<?php
+/************************************************************************************
+ *  Created By Amer Hendy Language Consol For Laravel
+ *      EGYPT -2023
+ *     {{ className }}
+ * 
+ * **********************************************************************************/
+return [
+    '{{ className }}'=>'{{ TransclassName }}',
+    'singular'=>'{{ Transsingular }}',
+    'plural'=>'{{ Transplural }}',
+    'create'=>'{{ Transcreate }}',
+    'edit'=>'{{ Transedit }}',
+];
